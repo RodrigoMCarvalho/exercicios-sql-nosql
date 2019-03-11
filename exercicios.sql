@@ -182,6 +182,10 @@ from vendas
 where produto = 'Mouse'
 group by cidade;
 
+select cidade, count(*) as Total
+from vendas
+group by cidade;
+
 select sum(quantidade) as 'Total de vendas'
 from vendas;
 
