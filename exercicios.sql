@@ -177,6 +177,11 @@ select * from vendas;
 select * from vendas
 where cidade = 'Rio de janeiro';
 
+select cidade, sum(quantidade) as 'Total de mouses'
+from vendas
+where produto = 'Mouse'
+group by cidade;
+
 select sum(quantidade) as 'Total de vendas'
 from vendas;
 
