@@ -195,7 +195,34 @@ group by cidade
 having sum(quantidade) > 500
 order by sum(quantidade) desc;
 
+=====================================
 
+desc autor;
+desc livro;
+
+select * from autor;
+select * from livro;
+
+select L.titulo as Livro, A.nome as Autor, L.preco as Preço
+from autor as A
+inner join livro as L
+on A.id = L.autor_id;
+
+select A.nome as Autor, L.titulo as Livro, L.preco as Preço
+from autor as A
+left join livro as L
+on A.id = L.autor_id;
+
+select A.nome as Autor, L.titulo as Livro, L.preco as Preço
+from autor as A
+left join livro as L
+on A.id = L.autor_id
+where L.titulo is null;
+
+select A.nome as Autor, L.titulo as Livro, L.preco as Preço
+from autor as A
+right join livro as L
+on A.id = L.autor_id;
 
 
 
