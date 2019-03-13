@@ -224,10 +224,12 @@ from autor as A
 right join livro as L
 on A.id = L.autor_id;
 
+=====================================
 
+show triggers;
 
-
-
+use information_schema;
+desc TRIGGERS;
 
 
 
