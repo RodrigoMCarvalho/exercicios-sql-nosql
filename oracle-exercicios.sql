@@ -101,6 +101,6 @@ select observacoes, valor, nome from compras
 join compradores
 on compras.comprador_id = compradores.id;
 
-
+select table_name from user_tables;
 
 
