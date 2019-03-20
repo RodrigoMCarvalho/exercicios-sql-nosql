@@ -101,6 +101,73 @@ select c.nome, avg(n.nota) as media from nota n
 where a.nome like '%Santos%' or a.nome like '%Silva%'
 group by c.nome;
 
+desc nota;
+desc resposta;
+desc exercicio;
+desc secao;
+desc curso;
+
+select * from resposta;
+
+--quantidade de respostas por exercício. Exibindo a pergunta e o número de respostas.
+select count(r.id) as quantidade, e.pergunta from exercicio e
+join resposta r on r.id = e.id
+group by e.pergunta 
+order by count(r.id) desc;
+
+desc nota;
+desc resposta;
+desc exercicio;
+desc secao;
+desc curso;
+
+--A média de notas por aluno por curso, podemos fazer GROUP BY aluno.nome, curso.nome.
+select a.nome, c.nome as curso, avg(n.nota) as media from nota n
+    join resposta r on r.id = n.resposta_id
+    join exercicio e on e.id = r.exercicio_id
+    join secao s on s.id = e.secao_id
+    join curso c on c.id = s.curso_id
+    join aluno a on a.id = r.aluno_id
+group by a.nome, c.nome;
+
+select a.nome, c.nome as curso, avg(n.nota) as media from nota n
+    join resposta r on r.id = n.resposta_id
+    join exercicio e on e.id = r.exercicio_id
+    join secao s on s.id = e.secao_id
+    join curso c on c.id = s.curso_id
+    join aluno a on a.id = r.aluno_id
+group by a.nome, c.nome
+having avg(n.nota) < 5;
+
+select count(a.id), c.nome from curso c
+    join matricula m on m.curso_id = c.id
+    join aluno a on m.aluno_id = a.id
+group by c.nome
+having count(a.id) > 3;
+
+--Exiba todos os cursos e a sua quantidade de matrículas. Mas exiba somente cursos que tenham mais de 1 matrícula.
+select c.nome, count(m.id) as quantidade from curso c
+    join matricula m on m.curso_id = c.id
+group by c.nome
+having count(m.id) > 1;
+
+select c.nome, count(s.id) from curso c
+    join secao s on s.curso_id = c.id
+group by c.nome
+having count(s.id) > 3;
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
