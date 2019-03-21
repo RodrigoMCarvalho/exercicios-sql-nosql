@@ -156,13 +156,28 @@ select c.nome, count(s.id) from curso c
 group by c.nome
 having count(s.id) > 3;
 
+select distinct tipo from matricula;
 
+select c.nome, m.tipo, count(m.id) as quantidade from matricula m
+    join curso c on c.id = m.curso_id
+where m.tipo = 'PAGA_PJ' or m.tipo= 'PAGA_PF'
+group by c.nome, m.tipo
+order by count(m.id), m.tipo ;
 
+select c.nome, m.tipo, count(m.id) as quantidade from matricula m
+    join curso c on c.id = m.curso_id
+where m.tipo in ('PAGA_PJ', 'PAGA_PF')
+group by c.nome, m.tipo
+order by count(m.id), m.tipo ;
 
+select * from aluno;
 
+select * from curso;
 
-
-
+select a.nome as aluno, c.nome as curso from curso c
+    join matricula m on m.curso_id = c.id
+    join aluno a on m.aluno_id = a.id
+where c.id in(1,9);
 
 
 
