@@ -179,11 +179,87 @@ select a.nome as aluno, c.nome as curso from curso c
     join aluno a on m.aluno_id = a.id
 where c.id in(1,9);
 
+--media de nota de aluno por curso, com formatação da media
+--ao relacionar matricula, é exibido todos os cursos matriculados
+select 
+    a.nome as aluno,
+    c.nome as curso, 
+    To_Char (avg(n.nota), '99.99') as media 
+from nota n
+    join resposta r on r.id = n.resposta_id
+    join aluno a on a.id = r.aluno_id
+    join matricula m on a.id = m.aluno_id
+    join curso c on c.id = m.curso_id 
+group by c.nome, a.nome
+order by a.nome;
 
+--media de nota de aluno por curso, com formatação da media
+--ao NÃO relacionar matricula, é exibido apenas o primero o cursos matriculado
+select 
+    a.nome as aluno,
+    c.nome as curso, 
+    To_Char (avg(n.nota), '99.99') as media 
+from nota n
+    join resposta r on r.id = n.resposta_id
+    join exercicio e on e.id = r.exercicio_id
+    join secao s on s.id = e.secao_id
+    join curso c on c.id = s.curso_id
+    join aluno a on a.id = r.aluno_id
+group by c.nome, a.nome
+order by a.nome;
 
+--total de respostas por aluno
+select a.nome, (select count(r.id) from resposta r where a.id = r.aluno_id) as respostas from aluno a;
 
+select a.nome, (select count(m.id) from matricula m where a.id = m.aluno_id) as matriculas from aluno a 
+order by (select count(m.id) from matricula m where a.id = m.aluno_id) desc;
 
+-- exibir apenas os alunos que tiveram alguma matrícula nos últimos 4 anos, 
+select 
+    a.nome as nome, 
+    c.nome as curso,
+    avg(n.nota) as media, 
+    avg(n.nota) - (select avg(n.nota) from nota n) as diferenca
+ from nota n
+    join resposta r on r.id = n.resposta_id
+    join exercicio e on e.id = r.exercicio_id
+    join secao s on s.id = e.secao_id
+    join curso c on c.id = s.curso_id
+    join aluno a on a.id = r.aluno_id
+where a.id in (select aluno_id from matricula where data > (select sysdate - interval '4' year from dual))
+group by c.nome, a.nome;
+    
+select nota from nota;
 
+select c.nome, count(a.id)as quantidade from curso c
+    join matricula m on m.curso_id = c.id
+    join aluno a on m.aluno_id = a.id
+group by c.nome;
+
+select a.nome, c.nome as curso from curso c
+    join matricula m on m.curso_id = c.id
+    join aluno a on m.aluno_id = a.id
+order by c.nome;
+
+select to_char(avg(n.nota), '99.99') as "MEDIA GERAL" from nota n;
+
+select a.nome, c.nome, to_char(avg(n.nota),'99.99') as media, 
+to_char( (select avg(n.nota) from nota n) - avg(n.nota),'99.99') as diferenca from nota n
+    join resposta r on r.id = n.resposta_id
+    join aluno a on a.id = r.aluno_id
+    join matricula m on a.id = m.aluno_id
+    join curso c on c.id = m.curso_id 
+group by a.nome, c.nome;
+
+--total de respostas
+select count(r.id) as repostas from resposta r;
+
+--total de respostas por aluno com respostas
+select a.nome, count(r.id) as respostas from resposta r 
+    join aluno a on a.id = r.aluno_id 
+group by a.nome;
+
+select nome from aluno;
 
 
 
