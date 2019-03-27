@@ -9,9 +9,10 @@ begin
     dbms_output.put_line(v_id);
 end;
 
-=============================
+--=============================--
+
 declare 
-    v_id segmercado.id%type := 3;
+    v_id segmercado.id%type := 1;
     v_descricao segmercado.descricao%type := 'esportivo';
 begin
     insert into segmercado values (v_id, upper(v_descricao));
@@ -41,13 +42,18 @@ begin
 end;
 
 
+CREATE SEQUENCE sqTeste
+    MINVALUE 1
+    MAXVALUE 300
+    START WITH 1
+    INCREMENT BY 1
+    CACHE 20;
 
 
-
-
+drop table segmercado;
+    
+SELECT * FROM USER_CONSTRAINTS WHERE TABLE_NAME = "segmercado";    
     
     
-    
-    
-    
+create sequence ID_SEGMERCADO_SEQ;    
     
