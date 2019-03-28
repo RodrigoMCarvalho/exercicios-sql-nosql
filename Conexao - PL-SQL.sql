@@ -23,3 +23,7 @@ ALTER TABLE cliente
 ADD CONSTRAINT cliente_segmercado_fk
 FOREIGN KEY(segmercado_id)
 REFERENCES segmercado(id);
+
+create sequence ID_cliente_seq;
+
+
