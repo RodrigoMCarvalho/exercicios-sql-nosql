@@ -43,21 +43,23 @@ end;
 
 create or replace procedure incluir_cliente (
     p_razao_social in cliente.razao_social%type,
-    p_cnpf in cliente.cnpj%type,
+    p_cnpj in cliente.cnpj%type,
     p_seqmercado_id in cliente.segmercado_id%type,
     p_faturamento_previsto in cliente.faturamento_previsto%type)
 is
     v_categoria cliente.categoria%type;
+    v_cnpj cliente.cnpj%type := p_cnpj; --variavel v_cnpj recebe o valor do parâmetro p_cnpj;
 begin
     v_categoria := categoria_cliente(p_faturamento_previsto); --chama a function
+    formatar_cnpj(v_cnpj); --chama a procedure para formar o cnpj
     
     insert into cliente 
-    values (ID_CLIENTE_SEQ.nextval,upper(p_razao_social), p_cnpf, p_seqmercado_id, 
+    values (ID_CLIENTE_SEQ.nextval,upper(p_razao_social), v_cnpj, p_seqmercado_id, 
             sysdate, p_faturamento_previsto,v_categoria);
     commit;
 end;
 
-call incluir_cliente('supermercado aaaa', 22222, null, 200000);
+call incluir_cliente('supermercado zzzz', 58745, null, 6000);
 
 select * from cliente;
 
@@ -78,25 +80,97 @@ begin
     end if;
 end;
 
+--=====================================================
+
+create or replace procedure formatar_cnpj (p_cnpj in out cliente.cnpj%type)
+is
+begin
+    p_cnpj := substr(p_cnpj, 1, 2) || '/' || substr(p_cnpj, 3); --concatenação e substituição de string. Ex: 12/345
+end;
+
+variable g_cnpj varchar2(10);
+execute :g_cnpj := '123456';
+print g_cnpj;
+
+execute formatar_cnpj(:g_cnpj);
+print g_cnpj;
+
+--=====================================================
+
+create or replace function tamanho_tabela
+    return number
+is
+    v_tamanho number;
+begin
+    select count(*) into v_tamanho from cliente;
+    
+    return v_tamanho;
+end;
+
+variable g_tamanho varchar2(25);
+execute :g_tamanho := tamanho_tabela;
+print g_tamanho;
+
+--=====================================================
+
+create or replace procedure atualizar_cli_seqmercado(
+    p_id in cliente.id%type,
+    p_segmercado_id in cliente.segmercado_id%type)
+is
+begin
+    update cliente
+        set segmercado_id = p_segmercado_id
+        where id = p_id;
+    commit;
+end;
+
+call atualizar_cli_seqmercado(1,2);
+
+select * from cliente;
+
+declare
+    v_segmercado_id cliente.segmercado_id%type := 1;
+    v_i number; --indice para o loop
+begin
+    v_i := 1;
+    loop
+        atualizar_cli_seqmercado(v_i, v_segmercado_id);
+        v_i := v_i + 1;
+        exit when v_i >= tamanho_tabela;  --function que retorna o tamanho da tabela
+    end loop;
+end;
 
 
+--=====================================================
+-- Utilizando o FOR
 
+declare
+    v_segmercado_id cliente.segmercado_id%type := 2;
+begin
+    for i in 1..tamanho_tabela loop
+       atualizar_cli_seqmercado(i, v_segmercado_id); 
+    end loop;
+    commit;
+end;
 
+--=====================================================
 
+declare
+begin
+    update cliente
+        set segmercado_id = 1
+        where id in (21,22);
+    commit;
+end;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+declare
+    
+begin
+    update cliente
+        set segmercado_id = 1
+        where id in (21,22);
+    commit;
+end;x
 
 
 
