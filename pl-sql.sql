@@ -40,6 +40,15 @@ begin
         where id = v_id;
     commit;
 end;
+=============================
+
+declare
+    v_id cliente.id%type := 41;
+begin
+    update cliente set razao_social = 'supermercado oooo' where id = v_id;
+end;
+
+call atualizar_cliente(41, 'supermercado oooo');
 
 
 CREATE SEQUENCE sqTeste

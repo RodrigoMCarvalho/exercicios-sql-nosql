@@ -64,6 +64,34 @@ call incluir_cliente('supermercado zzzz', 58745, null, 6000);
 select * from cliente;
 
 --=====================================================
+--procedure criada para estudar lançamento de exception
+
+create or replace procedure incluir_cliente_sem_sequence (
+    p_id in cliente.id%type,
+    p_razao_social in cliente.razao_social%type,
+    p_cnpj in cliente.cnpj%type,
+    p_seqmercado_id in cliente.segmercado_id%type,
+    p_faturamento_previsto in cliente.faturamento_previsto%type)
+is
+    v_categoria cliente.categoria%type;
+    v_cnpj cliente.cnpj%type := p_cnpj; --variavel v_cnpj recebe o valor do parâmetro p_cnpj;
+begin
+    v_categoria := categoria_cliente(p_faturamento_previsto); --chama a function
+    formatar_cnpj(v_cnpj); --chama a procedure para formar o cnpj
+    
+    insert into cliente 
+    values (p_id, upper(p_razao_social), v_cnpj, p_seqmercado_id, 
+            sysdate, p_faturamento_previsto,v_categoria);
+    commit;
+    
+    exception 
+        when dup_val_on_index then
+            --dbms_output.put_line('Cliente já cadastrado'); visualizado somente dentro do SQL Developer
+            raise_application_error(-20010, 'Cliente já cadastrado');
+        
+end;
+
+--=====================================================
 
 create or replace function categoria_cliente ( p_faturamento_previsto in cliente.faturamento_previsto%type)
     return cliente.categoria%type
@@ -170,11 +198,24 @@ begin
         set segmercado_id = 1
         where id in (21,22);
     commit;
-end;x
+end;
 
+--=====================================================
 
-
-
+create or replace procedure atualizar_cliente (
+    p_id in cliente.id%type,
+    p_razao_social in cliente.razao_social%type)
+is
+begin
+    update cliente 
+    set razao_social = upper(p_razao_social)
+    where id = p_id;
+    commit;
+    
+exception
+    when dup_val_on_index then
+        dbms_output.put_line ('Cliente não localizado');
+end;
 
 
 
