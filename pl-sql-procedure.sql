@@ -56,7 +56,7 @@ begin
     insert into cliente 
     values (ID_CLIENTE_SEQ.nextval,upper(p_razao_social), v_cnpj, p_seqmercado_id, 
             sysdate, p_faturamento_previsto,v_categoria);
-    commit;
+    commit;   --Quando não há um comando de fim de transação (COMMIT ou ROLLBACK), os comandos de DML da transação ficam pendentes.
 end;
 
 call incluir_cliente('supermercado zzzz', 58745, null, 6000);
@@ -75,6 +75,8 @@ create or replace procedure incluir_cliente_sem_sequence (
 is
     v_categoria cliente.categoria%type;
     v_cnpj cliente.cnpj%type := p_cnpj; --variavel v_cnpj recebe o valor do parâmetro p_cnpj;
+    e_null exception;
+    pragma exception_init(e_null, -01400);   
 begin
     v_categoria := categoria_cliente(p_faturamento_previsto); --chama a function
     formatar_cnpj(v_cnpj); --chama a procedure para formar o cnpj
@@ -82,13 +84,16 @@ begin
     insert into cliente 
     values (p_id, upper(p_razao_social), v_cnpj, p_seqmercado_id, 
             sysdate, p_faturamento_previsto,v_categoria);
-    commit;
+    commit;  
     
-    exception 
-        when dup_val_on_index then
-            --dbms_output.put_line('Cliente já cadastrado'); visualizado somente dentro do SQL Developer
-            raise_application_error(-20010, 'Cliente já cadastrado');
-        
+exception 
+    when dup_val_on_index then
+        --dbms_output.put_line('Cliente já cadastrado'); visualizado somente dentro do SQL Developer
+        raise_application_error(-20010, 'Cliente já cadastrado'); --informar um ID já cadastrado
+    when e_null then
+        raise_application_error(-20015, 'A coluna ID tem preenchimento obrigatório.'); --informar ID null
+    when others then
+        raise_application_error(-20020, sqlerrm());
 end;
 
 --=====================================================
@@ -145,15 +150,21 @@ create or replace procedure atualizar_cli_seqmercado(
     p_id in cliente.id%type,
     p_segmercado_id in cliente.segmercado_id%type)
 is
+    e_cliente_id_inexistente exception;
 begin
     update cliente
         set segmercado_id = p_segmercado_id
         where id = p_id;
+    if sql%notfound then          --será TRUE se o comando anterior não retornar nada
+        raise e_cliente_id_inexistente;
+    end if;
     commit;
+exception
+    when e_cliente_id_inexistente then
+        raise_application_error(-20100, 'Cliente inexistente');
 end;
 
 call atualizar_cli_seqmercado(1,2);
-
 select * from cliente;
 
 declare
