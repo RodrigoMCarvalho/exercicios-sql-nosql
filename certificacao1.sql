@@ -1,6 +1,6 @@
 SELECT * FROM funcionarios;
 
---traz somente registros que possuem igualdade entre as tabelas
+--traz somente registros que possuem corrspondências entre as tabelas ( INNER JOIN )
 SELECT nome, salario,setor_nome FROM funcionarios f
 JOIN setores s 
 ON s.setor_id = f.setor_id;
@@ -18,7 +18,7 @@ ON s.setor_id = f.setor_id;
 SELECT nome, salario, setor_nome FROM funcionarios f, setores s
 WHERE s.setor_id(+) = f.setor_id;
 
---traz todos registros da direita do relacionamento
+--traz todos registros da direita do relacionamento ( funcionarios RIGHT JOIN setores)
 SELECT nome, salario,setor_nome FROM funcionarios f
 RIGHT JOIN setores s 
 ON s.setor_id = f.setor_id;
@@ -34,15 +34,15 @@ ON s.setor_id = f.setor_id;
 
 -------- USING --------
 
-SELECT nome, salario,setor_nome FROM funcionarios f
+SELECT nome, salario,setor_nome FROM funcionarios 
 JOIN setores 
 USING(setor_id);
 
-SELECT nome, salario,setor_nome FROM funcionarios f
+SELECT nome, salario,setor_nome FROM funcionarios 
 LEFT JOIN setores 
 USING(setor_id);
 
-SELECT nome, salario,setor_nome FROM funcionarios f
+SELECT nome, salario,setor_nome FROM funcionarios 
 FULL JOIN setores 
 USING(setor_id);
 
