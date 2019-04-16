@@ -54,3 +54,35 @@ NATURAL JOIN setores;
 SELECT nome, salario,setor_nome FROM funcionarios f
 NATURAL FULL JOIN setores;
 
+--------------------------------------
+--SELF JOIN - join para a mesma tabela
+SELECT f.nome , g.nome as gerente FROM funcionarios f
+JOIN funcionarios g 
+ON f.gerente_id = g.id;
+
+--------------------------------------
+--UNION ALL - junto duas queries. O numero de colunas(nome no ex abaixo) tem que ser o mesmo
+SELECT nome FROM funcionarios WHERE setor_id = 2
+UNION ALL
+SELECT nome FROM funcionarios WHERE nome LIKE 'D%';
+
+--Traz somente os resultados comuns nas duas queries (interseção)
+SELECT nome FROM funcionarios WHERE setor_id = 2
+INTERSECT
+SELECT nome FROM funcionarios WHERE nome LIKE 'D%';
+
+--Traz somente a diferença
+SELECT nome FROM funcionarios WHERE setor_id = 2
+MINUS
+SELECT nome FROM funcionarios WHERE nome LIKE 'D%';
+
+
+
+
+
+
+
+
+
+
+
