@@ -1,54 +1,55 @@
 create sequence id_segmercado_seq;
 create sequence id_cliente_seq;
 
-set serveroutput on;
-declare 
-    v_id number(5) := 10;
-begin
+SET SERVEROUTPUT ON;
+DECLARE 
+    v_id NUMBER(5) := 10;
+BEGIN
     v_id := 6;
     dbms_output.put_line(v_id);
-end;
+END;
 
 --=============================--
 
-declare 
+DECLARE 
     v_id segmercado.id%type := 1;
     v_descricao segmercado.descricao%type := 'esportivo';
-begin
-    insert into segmercado values (v_id, upper(v_descricao));
-    commit;
-end;
+BEGIN
+    INSERT INTO segmercado VALUES (v_id, UPPER(v_descricao));
+    COMMIT;
+END;
     
-select * from segmercado;    
+SELECT * FROM segmercado;    
     
-=============================
-declare 
+--=============================
+DECLARE 
     v_id segmercado.id%type := 2;
     v_descricao segmercado.descricao%type := 'atacadista';
-begin
-    update segmercado 
-        set descricao = upper(v_descricao)
-        where id = v_id;
-    commit;
-end;
+BEGIN
+    UPDATE segmercado 
+        SET descricao = UPPER(v_descricao)
+        WHERE ID = v_id;
+    COMMIT;
+END;
 
-=============================
-declare 
+--=============================
+DECLARE 
     v_id segmercado.id%type := 3;
-begin
-    delete from segmercado 
-        where id = v_id;
-    commit;
-end;
-=============================
+BEGIN
+    DELETE FROM segmercado 
+        WHERE ID = v_id;
+    COMMIT;
+END;
+--=============================
 
-declare
+DECLARE
     v_id cliente.id%type := 41;
-begin
-    update cliente set razao_social = 'supermercado oooo' where id = v_id;
-end;
+BEGIN
+    UPDATE cliente SET razao_social = 'supermercado oooo' 
+    WHERE ID = v_id;
+END;
 
-call atualizar_cliente(41, 'supermercado oooo');
+CALL  atualizar_cliente(41, 'supermercado oooo');
 
 
 CREATE SEQUENCE sqTeste
@@ -59,10 +60,10 @@ CREATE SEQUENCE sqTeste
     CACHE 20;
 
 
-drop table segmercado;
+DROP TABLE segmercado;
     
 SELECT * FROM USER_CONSTRAINTS WHERE TABLE_NAME = "segmercado";    
     
     
-create sequence ID_SEGMERCADO_SEQ;    
+CREATE SEQUENCE ID_SEGMERCADO_SEQ;    
     

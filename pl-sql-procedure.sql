@@ -1,232 +1,223 @@
-create  or replace procedure incluir_segmercado (
+CREATE OR REPLACE PROCEDURE incluir_segmercado (
     p_descricao in segmercado.descricao%type)
-is
-begin
-    insert into segmercado
-        values(ID_SEGMERCADO_SEQ.nextval, upper(p_descricao));
-    commit;
-end;
+IS
+BEGIN
+    INSERT INTO segmercado
+        VALUE(ID_SEGMERCADO_SEQ.nextval, UPPER(p_descricao));
+    COMMIT;
+END;
 
-execute incluir_segmercado('varejista'); --comando do SQL Developer
-call incluir_segmercado('atacadista');
+EXECUTE incluir_segmercado('varejista'); --comando do SQL Developer
+CALL incluir_segmercado('atacadista');
 
-select * from segmercado;
+SELECT * FROM segmercado;
 
 --=========================================---
 --FUNCTION retorna um valor
 
-create or replace function obter_descricao_segmercado(p_id in segmercado.id%type)
-   return segmercado.descricao%type
-is
+CREATE OR REPLACE FUNCTION obter_descricao_segmercado(p_id IN segmercado.id%type)
+   RETURN segmercado.descricao%type
+IS
     v_descricao segmercado.descricao%type;
-begin
-    select descricao into v_descricao --passar o conteúdo da coluna descricao para a variavel v_descricao
-    from segmercado
-    where id = p_id;
+BEGIN
+    SELECT descricao INTO v_descricao --passar o conteúdo da coluna descricao para a variavel v_descricao
+    FROM segmercado
+    WHERE ID = p_id;
     
-    return v_descricao;
-end;
+    RETURN v_descricao;
+END;
 
-variable g_descricao varchar2(100); --comando do SQL Developer
-execute :g_descricao := obter_descricao_segmercado(1); --comando do SQL Developer
-print g_descricao;
+VARIABLE g_descricao VARCHAR2(100); --comando do SQL Developer
+EXECUTE :g_descricao := obter_descricao_segmercado(1); --comando do SQL Developer
+PRINT g_descricao;
 
-set SERVEROUTPUT on
-declare 
+SET SERVEROUTPUT ON;
+DECLARE 
     v_descricao segmercado.descricao%type;
-begin
+BEGIN
     v_descricao := obter_descricao_segmercado(2);
     dbms_output.put_line('Descricao: '|| v_descricao);
-end;
+END;
 
 --=====================================================
 
-create or replace procedure incluir_cliente (
-    p_razao_social in cliente.razao_social%type,
-    p_cnpj in cliente.cnpj%type,
-    p_seqmercado_id in cliente.segmercado_id%type,
-    p_faturamento_previsto in cliente.faturamento_previsto%type)
-is
+CREATE OR REPLACE PROCEDURE incluir_cliente (
+    p_razao_social IN cliente.razao_social%type,
+    p_cnpj IN cliente.cnpj%type,
+    p_seqmercado_id IN cliente.segmercado_id%type,
+    p_faturamento_previsto IN cliente.faturamento_previsto%type)
+IS
     v_categoria cliente.categoria%type;
     v_cnpj cliente.cnpj%type := p_cnpj; --variavel v_cnpj recebe o valor do parâmetro p_cnpj;
-begin
+BEGIN
     v_categoria := categoria_cliente(p_faturamento_previsto); --chama a function
     formatar_cnpj(v_cnpj); --chama a procedure para formar o cnpj
     
-    insert into cliente 
-    values (ID_CLIENTE_SEQ.nextval,upper(p_razao_social), v_cnpj, p_seqmercado_id, 
+    INSERT INTO cliente 
+    VALUES (ID_CLIENTE_SEQ.nextval,upper(p_razao_social), v_cnpj, p_seqmercado_id, 
             sysdate, p_faturamento_previsto,v_categoria);
-    commit;   --Quando não há um comando de fim de transação (COMMIT ou ROLLBACK), os comandos de DML da transação ficam pendentes.
-end;
+    COMMIT;   --Quando não há um comando de fim de transação (COMMIT ou ROLLBACK), os comandos de DML da transação ficam pendentes.
+END;
 
-call incluir_cliente('supermercado zzzz', 58745, null, 6000);
+CALL incluir_cliente('supermercado zzzz', 58745, null, 6000);
 
-select * from cliente;
+SELECT * FROM cliente;
 
 --=====================================================
 --procedure criada para estudar lançamento de exception
 
-create or replace procedure incluir_cliente_sem_sequence (
-    p_id in cliente.id%type,
-    p_razao_social in cliente.razao_social%type,
-    p_cnpj in cliente.cnpj%type,
-    p_seqmercado_id in cliente.segmercado_id%type,
-    p_faturamento_previsto in cliente.faturamento_previsto%type)
-is
+CREATE OR REPLACE PROCEDURE incluir_cliente_sem_sequence (
+    p_id IN cliente.id%type,
+    p_razao_social IN cliente.razao_social%type,
+    p_cnpj IN cliente.cnpj%type,
+    p_seqmercado_id IN cliente.segmercado_id%type,
+    p_faturamento_previsto IN cliente.faturamento_previsto%type)
+IS
     v_categoria cliente.categoria%type;
     v_cnpj cliente.cnpj%type := p_cnpj; --variavel v_cnpj recebe o valor do parâmetro p_cnpj;
-    e_null exception;
-    pragma exception_init(e_null, -01400);   
-begin
+    e_null EXCEPTION;
+    PRAGMA exception_init(e_null, -01400);   
+BEGIN
     v_categoria := categoria_cliente(p_faturamento_previsto); --chama a function
     formatar_cnpj(v_cnpj); --chama a procedure para formar o cnpj
     
-    insert into cliente 
-    values (p_id, upper(p_razao_social), v_cnpj, p_seqmercado_id, 
+    INSERT INTO cliente 
+    VALUES (p_id, upper(p_razao_social), v_cnpj, p_seqmercado_id, 
             sysdate, p_faturamento_previsto,v_categoria);
-    commit;  
+    COMMIT;  
     
-exception 
-    when dup_val_on_index then
+EXCEPTION 
+    WHEN dup_val_on_index THEN
         --dbms_output.put_line('Cliente já cadastrado'); visualizado somente dentro do SQL Developer
         raise_application_error(-20010, 'Cliente já cadastrado'); --informar um ID já cadastrado
-    when e_null then
+    WHEN e_null THEN
         raise_application_error(-20015, 'A coluna ID tem preenchimento obrigatório.'); --informar ID null
-    when others then
+    WHEN OTHERS THEN
         raise_application_error(-20020, sqlerrm());
-end;
+END;
 
 --=====================================================
 
-create or replace function categoria_cliente ( p_faturamento_previsto in cliente.faturamento_previsto%type)
-    return cliente.categoria%type
-is
-begin
-    if p_faturamento_previsto < 1000 then
-        return 'PEQUENO';
-    elsif p_faturamento_previsto < 5000 then
-        return 'MEDIO';
-    elsif p_faturamento_previsto < 10000 then
-        return 'MEDIO GRANDE';
-    else 
-        return 'GRANDE';
-    end if;
-end;
+CREATE OR REPLACE FUNCTION categoria_cliente ( p_faturamento_previsto IN cliente.faturamento_previsto%type)
+    RETURN cliente.categoria%type
+IS
+BEGIN
+    IF p_faturamento_previsto < 1000 then
+        RETURN 'PEQUENO';
+    ELSIF p_faturamento_previsto < 5000 then
+        RETURN 'MEDIO';
+    ELSIF p_faturamento_previsto < 10000 then
+        RETURN 'MEDIO GRANDE';
+    ELSE 
+        RETURN 'GRANDE';
+    END IF;
+END;
 
 --=====================================================
 
-create or replace procedure formatar_cnpj (p_cnpj in out cliente.cnpj%type)
-is
-begin
+CREATE OR REPLACE PROCEDURE formatar_cnpj (p_cnpj IN OUT cliente.cnpj%type)
+IS
+BEGIN
     p_cnpj := substr(p_cnpj, 1, 2) || '/' || substr(p_cnpj, 3); --concatenação e substituição de string. Ex: 12/345
-end;
+END;
 
-variable g_cnpj varchar2(10);
-execute :g_cnpj := '123456';
-print g_cnpj;
+VARIABLE g_cnpj VARCHAR2(10);
+EXECUTE :g_cnpj := '123456';
+PRINT g_cnpj;
 
-execute formatar_cnpj(:g_cnpj);
-print g_cnpj;
+EXECUTE formatar_cnpj(:g_cnpj);
+PRINT g_cnpj;
 
 --=====================================================
 
-create or replace function tamanho_tabela
-    return number
-is
+CREATE OR REPLACE FUNCTION tamanho_tabela
+    RETURN NUMBER
+IS
     v_tamanho number;
-begin
-    select count(*) into v_tamanho from cliente;
+BEGIN
+    SELECT COUNT(*) INTO v_tamanho FROM cliente;
     
-    return v_tamanho;
-end;
+    RETURN v_tamanho;
+END;
 
-variable g_tamanho varchar2(25);
-execute :g_tamanho := tamanho_tabela;
-print g_tamanho;
+VARIABLE g_tamanho VARCHAR2(25);
+EXECUTE :g_tamanho := tamanho_tabela;
+PRINT g_tamanho;
 
 --=====================================================
 
-create or replace procedure atualizar_cli_seqmercado(
-    p_id in cliente.id%type,
-    p_segmercado_id in cliente.segmercado_id%type)
-is
-    e_cliente_id_inexistente exception;
-begin
-    update cliente
-        set segmercado_id = p_segmercado_id
-        where id = p_id;
-    if sql%notfound then          --será TRUE se o comando anterior não retornar nada
-        raise e_cliente_id_inexistente;
-    end if;
-    commit;
-exception
-    when e_cliente_id_inexistente then
+CREATE OR REPLACE PROCEDURE atualizar_cli_seqmercado(
+    p_id IN cliente.id%type,
+    p_segmercado_id IN cliente.segmercado_id%type)
+IS
+    e_cliente_id_inexistente EXCEPTION;
+BEGIN
+    UPDATE cliente
+        SET segmercado_id = p_segmercado_id
+        WHERE ID = p_id;
+    IF sql%notfound THEN          --será TRUE se o comando anterior não retornar nada
+        RAISE e_cliente_id_inexistente;
+    END IF;
+    COMMIT;
+EXCEPTION
+    WHEN e_cliente_id_inexistente THEN
         raise_application_error(-20100, 'Cliente inexistente');
-end;
+END;
 
-call atualizar_cli_seqmercado(1,2);
-select * from cliente;
+CALL atualizar_cli_seqmercado(1,2);
+SELECT * FROM cliente;
 
-declare
+DECLARE
     v_segmercado_id cliente.segmercado_id%type := 1;
-    v_i number; --indice para o loop
-begin
+    v_i NUMBER; --indice para o loop
+BEGIN
     v_i := 1;
-    loop
+    LOOP
         atualizar_cli_seqmercado(v_i, v_segmercado_id);
         v_i := v_i + 1;
-        exit when v_i >= tamanho_tabela;  --function que retorna o tamanho da tabela
-    end loop;
-end;
+        EXIT WHEN v_i >= tamanho_tabela;  --function que retorna o tamanho da tabela
+    END loop;
+END;
 
 
 --=====================================================
 -- Utilizando o FOR
 
-declare
+DECLARE
     v_segmercado_id cliente.segmercado_id%type := 2;
-begin
-    for i in 1..tamanho_tabela loop
+BEGIN
+    FOR i IN 1..tamanho_tabela LOOP
        atualizar_cli_seqmercado(i, v_segmercado_id); 
-    end loop;
-    commit;
-end;
+    END LOOP;
+    COMMIT;
+END;
 
 --=====================================================
 
-declare
-begin
-    update cliente
-        set segmercado_id = 1
-        where id in (21,22);
-    commit;
-end;
-
-declare
-    
-begin
-    update cliente
-        set segmercado_id = 1
-        where id in (21,22);
-    commit;
-end;
+DECLARE
+BEGIN
+    UPDATE cliente
+        SET segmercado_id = 1
+        WHERE ID IN (21,22);
+    COMMIT;
+END;
 
 --=====================================================
 
-create or replace procedure atualizar_cliente (
-    p_id in cliente.id%type,
-    p_razao_social in cliente.razao_social%type)
-is
-begin
-    update cliente 
-    set razao_social = upper(p_razao_social)
-    where id = p_id;
-    commit;
+CREATE OR REPLACE PROCEDURE atualizar_cliente (
+    p_id IN cliente.id%type,
+    p_razao_social IN cliente.razao_social%type)
+IS
+BEGIN
+    UPDATE cliente 
+    SET razao_social = UPPER(p_razao_social)
+    WHERE ID = p_id;
+    COMMIT;
     
-exception
-    when dup_val_on_index then
+EXCEPTION
+    WHEN dup_val_on_index THEN
         dbms_output.put_line ('Cliente não localizado');
-end;
+END;
 
 
 
