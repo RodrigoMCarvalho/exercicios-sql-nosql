@@ -57,16 +57,61 @@ SELECT COUNT(id) FROM funcionarios;
 --funcionarios por setor---
 SELECT COUNT(id) FROM funcionarios GROUP BY setor_id;
 
+--Essa query nos retorna a quantidade de caracteres diferentes que iniciam o nome dos funcionários
+SELECT COUNT(DISTINCT SUBSTR(nome, 1,1)) FROM funcionarios;
 
+--------------------------------------------------
+--
+SELECT MAX(salario) as Maior, MIN(salario) as Menor FROM funcionarios;
 
+SELECT MAX(salario) as Maior, MIN(salario) as Menor FROM funcionarios GROUP BY setor_id;
 
+SELECT s.setor_nome as Setor, MAX(salario) as Maior, MIN(salario) as Menor FROM funcionarios f
+JOIN setores s ON s.setor_id = f.setor_id
+GROUP BY s.setor_nome;
 
+SELECT MAX(COUNT(*)) FROM funcionarios GROUP BY cargo_id, setor_id;
 
+--------------------------------------------------
+SELECT * FROM funcionarios;
 
+SELECT SUM(salario) FROM funcionarios;
 
+-- SUM quando existe uma conta e valores NULL, esses registros são ignorados
+SELECT SUM(salario + salario * pct_comissao) FROM funcionarios;
 
+--adicionando NVL as colunas com valores NULL são somados
+SELECT SUM(salario + salario * NVL(pct_comissao, 0)) FROM funcionarios;
 
+--------------------------------------------------
 
+SELECT AVG(salario) FROM funcionarios;
+
+--pega o salário do meio pela ordem crescente, não é média
+SELECT MEDIAN(salario) FROM funcionarios;
+
+--------------------------------------------------
+
+SELECT nome, salario FROM funcionarios;
+
+SELECT AVG(salario) FROM funcionarios;
+
+-- função ROUND para arredondar
+SELECT ROUND(AVG(salario), -1) FROM funcionarios;
+SELECT ROUND(AVG(salario), -2) FROM funcionarios;
+
+-- STDDEV é uma função que retorna o desvio padrão de um conjunto de números. 
+SELECT STDDEV(salario) FROM funcionarios;
+SELECT ROUND(STDDEV(salario)) FROM funcionarios;
+
+SELECT (ROUND(AVG(salario)) + ROUND(STDDEV(salario))) as Maximo, 
+       (ROUND(AVG(salario)) - ROUND(STDDEV(salario))) as Minimo FROM funcionarios;
+
+--Desvio Padrão é a raiz quadrada da VARIANCE      
+SELECT VARIANCE(salario) FROM funcionarios;
+SELECT SQRT(VARIANCE(salario)) as DesvioPadrao FROM funcionarios;
+
+SELECT ROUND(SQRT(VARIANCE(salario))) as DesvioPadrao FROM funcionarios;
 
 
 
