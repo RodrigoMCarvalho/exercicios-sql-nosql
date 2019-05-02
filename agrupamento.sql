@@ -113,5 +113,85 @@ SELECT SQRT(VARIANCE(salario)) as DesvioPadrao FROM funcionarios;
 
 SELECT ROUND(SQRT(VARIANCE(salario))) as DesvioPadrao FROM funcionarios;
 
+--------------------------------------------------
+
+SELECT * FROM setores;
+
+SELECT SUM(salario) FROM funcionarios;
+SELECT SUM(salario) FROM funcionarios GROUP BY setor_id;
+
+SELECT f.nome, f.salario, s.setor_nome FROM funcionarios f
+JOIN setores s ON s.setor_id = f.setor_id
+WHERE s.setor_id = 1
+ORDER BY f.salario;
+
+SELECT s.setor_nome, SUM(salario) FROM funcionarios f
+JOIN setores s ON s.setor_id = f.setor_id
+GROUP BY s.setor_nome;
+
+-----------------------------------------
+--ROLLUP para calcular subtotais
+
+SELECT s.setor_nome, SUM(salario), (SELECT SUM(salario) FROM funcionarios) as Total FROM funcionarios f
+RIGHT JOIN setores s ON s.setor_id = f.setor_id
+GROUP BY s.setor_nome;
+
+SELECT s.setor_nome, SUM(salario) FROM funcionarios f
+JOIN setores s ON s.setor_id = f.setor_id
+GROUP BY ROLLUP(s.setor_nome);
+
+SELECT s.setor_nome, SUM(salario), COUNT(*) FROM funcionarios f
+JOIN setores s ON s.setor_id = f.setor_id
+GROUP BY ROLLUP(s.setor_nome);
+
+SELECT s.setor_nome, SUM(salario), COUNT(*) FROM funcionarios f
+JOIN setores s ON s.setor_id = f.setor_id
+GROUP BY ROLLUP(s.setor_nome, f.salario);
+
+SELECT s.setor_nome, SUM(salario), COUNT(*) FROM funcionarios f
+JOIN setores s ON s.setor_id = f.setor_id
+GROUP BY CUBE(s.setor_nome, f.salario) ORDER BY s.setor_nome;
+-----------------------------------------
+
+SELECT s.setor_nome, SUM(salario) FROM funcionarios f
+JOIN setores s ON s.setor_id = f.setor_id
+GROUP BY s.setor_nome
+HAVING SUM(salario) > 15000;
+
+--seleciona todos os salarios 2000 ( ignora os menores )
+--e desse agrupamento filtra (HAVING) os setores com a soma dos salarios maiores que  15000
+SELECT s.setor_nome, SUM(salario) FROM funcionarios f
+JOIN setores s ON s.setor_id = f.setor_id
+WHERE salario > 2000
+GROUP BY s.setor_nome
+HAVING SUM(salario) > 15000;
+
+--------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 

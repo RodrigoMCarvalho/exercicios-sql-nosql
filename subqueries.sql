@@ -75,8 +75,20 @@ HAVING COUNT(setor_id) = (
     SELECT MAX (COUNT(setor_id))FROM funcionarios GROUP BY setor_id
     );
 
+-------------------------------------------------------
+SELECT nome, salario FROM funcionarios;
+--
+SELECT ROWNUM, nome, salario FROM (SELECT nome,salario FROM funcionarios);
 
+SELECT ROWNUM, nome, salario FROM (SELECT nome, salario FROM funcionarios) WHERE ROWNUM <= 5;
 
+-- não ira retornar nenhum valor, pois o ROWNUM só assume o valor depois que todas as linhas forem selecionadas
+-- e está filtrando antes disso
+SELECT ROWNUM, nome, salario FROM (SELECT nome, salario FROM funcionarios) WHERE ROWNUM > 5;
+SELECT * FROM (SELECT ROWNUM, nome, salario FROM (SELECT nome, salario FROM funcionarios)) WHERE ROWNUM > 5;
+
+--criar um alias para o ROWNUM acessar o ROWNUM da query interna e não externa
+SELECT * FROM (SELECT ROWNUM AS r, nome, salario FROM (SELECT nome, salario FROM funcionarios)) WHERE r > 5;
 
 
 
