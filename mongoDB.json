@@ -18,8 +18,8 @@
 }
 
 
-db.alunos.remove({
-	"_id" : ObjectId("5c7efead1302585826ee65a7")
+db.frutas.remove({
+	"_id" : ObjectId("5e4c8526d6451f7d2e7c3779")
 })
 
 db.alunos.insert(
@@ -67,12 +67,33 @@ db.frutas.insert([
 	{"nome": "melao","quantidade": 15}
 ]);
 
-db.frutas.remove({"nome": "melao"});
+db.frutas.insert({
+	"nome": "banana", 
+	"quantidade": 18,
+	"tipo": [
+		{"nome": "nanica"},
+		{"nome": "prata"},
+		{"nome": "dagua"},
+		{"nome": "terra"}
+	]
+})
+
+db.frutas.remove({"nome": "banana"});
 
 db.frutas.update({"nome": "laranja"}, {$set: {"quantidade": 45}});
 
 db.frutas.update({"nome": "morango"}, {$set: {"preco": 8.5}});
-db.frutas.update({"nome": "morango"}, {$unset: {"preco": 1}});
+db.db.frutas.insert(
+	{
+	"nome": "banana", 
+	"quantidade": 18,
+	"tipo": {[
+		{"nome": "nanica"},
+		{"nome": "prata"},
+		{"nome": "dagua"},
+		{"nome": "terra"}
+	]}
+})frutas.update({"nome": "morango"}, {$unset: {"preco": 1}});
 
 db.frutas.update({"nome": "pera"}, {$inc: {"quantidade": 1}});   //incrementa
 db.frutas.update({"nome": "pera"}, {$inc: {"quantidade": -1}});	//decrementa
@@ -85,3 +106,22 @@ db.frutas.update({"nome": "banana"}, {$pull: {"tipo": "maca"}});   //elimina o t
 
 db.frutas.update({"nome": "banana"}, {$set: {"tipo.2": "Terra"}});  //altera a posição 2 do array
 
+db.frutas.find({"nome": "laranja"}).pretty();
+
+db.frutas.find({"nome": /an/}).pretty();
+
+db.frutas.find().limit(2);
+db.frutas.find().sort({nome: 1});
+db.frutas.find().sort({nome: -1});
+db.frutas.find().sort({quantidade: 1});
+
+db.frutas.find({}, {"nome": 1, "quantidade": 1}).pretty() //lista sem critérios, mostrando somente os campo nome quantidade
+
+db.frutas.find({quantidade: {$gte: 10, $lt: 15}}) // >= 10 e > 15
+
+db.frutas.find({nome: {$ne: "morango"}}).pretty();  //mostrar todas as frutas menos morango
+
+db.frutas.find({quantidade: {$in: [10, 45]}}).pretty();  //condição OU, tras a quantidade 10 ou 45
+db.frutas.find({quantidade: {$nin: [10, 45]}}).pretty();
+
+db.frutas.find({"tipo.nome": "prata"}).pretty()
