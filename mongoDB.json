@@ -83,17 +83,19 @@ db.frutas.remove({"nome": "banana"});
 db.frutas.update({"nome": "laranja"}, {$set: {"quantidade": 45}});
 
 db.frutas.update({"nome": "morango"}, {$set: {"preco": 8.5}});
-db.db.frutas.insert(
+db.frutas.insert(
 	{
 	"nome": "banana", 
 	"quantidade": 18,
-	"tipo": {[
+	"tipo": [
 		{"nome": "nanica"},
 		{"nome": "prata"},
 		{"nome": "dagua"},
 		{"nome": "terra"}
-	]}
-})frutas.update({"nome": "morango"}, {$unset: {"preco": 1}});
+	]
+})
+
+frutas.update({"nome": "morango"}, {$unset: {"preco": 1}});
 
 db.frutas.update({"nome": "pera"}, {$inc: {"quantidade": 1}});   //incrementa
 db.frutas.update({"nome": "pera"}, {$inc: {"quantidade": -1}});	//decrementa
@@ -125,3 +127,91 @@ db.frutas.find({quantidade: {$in: [10, 45]}}).pretty();  //condição OU, tras a
 db.frutas.find({quantidade: {$nin: [10, 45]}}).pretty();
 
 db.frutas.find({"tipo.nome": "prata"}).pretty()
+
+use vendas
+
+db.venda.insert(
+	{"produtos": [
+		{"nome": "arroz"},
+		{"nome": "feijao"},
+		{"nome": "banana"},
+		{"nome": "detergente"}
+	]
+})
+
+db.venda.insert(
+	{"produtos": [
+		{"nome": "arroz"},
+		{"nome": "feijao"},
+		{"nome": "cafe"},
+		{"nome": "laranja"},
+		{"nome": "sabao"}
+	]
+})
+
+db.venda.remove({
+	_id: {$in:[
+			ObjectId("5e4dd86aab01b962fc19d123"),
+			ObjectId("5e4dd86aab01b962fc19d124"),
+			ObjectId("5e4dd871ab01b962fc19d12e"),
+			ObjectId("5e4dd871ab01b962fc19d12f")
+			]
+		}
+	})
+
+db.venda.aggregate({
+	$project: {
+		produtosNovos: "$produtos.nome"
+	}
+}).pretty();
+
+db.venda.aggregate({
+	$project: {
+		nome: "$produtos.nome"
+	}
+},{
+	$unwind: "$nome"
+}).pretty();
+
+db.venda.aggregate({
+	$project: {
+		nome: "$produtos.nome"
+	}
+},{
+	$unwind: "$nome"
+},{
+	$group: {
+		_id: "$nome"
+	}
+}).pretty();
+
+//agrupa os produtos por nome e mostra a quantidade
+db.venda.aggregate({
+	$project: {
+		nome: "$produtos.nome"
+	}
+},{
+	$unwind: "$nome"
+},{
+	$group: {
+		_id: "$nome", "quantidade": {$sum: 1}
+	}
+}).pretty();
+
+//agrupa os produtos por nome e ordena pela pela quantidade
+db.venda.aggregate({
+	$project: {
+		nome: "$produtos.nome"
+	}
+},{
+	$unwind: "$nome"
+},{
+	$group: {
+		_id: "$nome", "quantidade": {$sum: 1}
+	}
+}, {
+	$sort: {
+		quantidade: -1
+	}
+}).pretty();
+
