@@ -24,7 +24,22 @@ ORDER BY
 	OFFSET ((3 - 1) * 5) ROWS
 	FETCH NEXT 5 ROWS ONLY
 
+------ Consulta paginada outro exemplo
 
+
+DECLARE @PageNumber AS INT, @RowsPerPage AS INT
+SET @PageNumber = :pageNumber
+SET @RowsPerPage = :pageSize
+
+SELECT
+    id,
+    nome,
+    idade
+FROM 
+	TABELA1
+ORDER BY id
+	OFFSET ((@PageNumber - 1) * @RowsPerPage) ROWS
+	FETCH NEXT @RowsPerPage ROWS ONLY
 
 ---- Numero de páginas
 
